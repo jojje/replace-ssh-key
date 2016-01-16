@@ -84,10 +84,18 @@ end
 
 def hosts
   file = assert_file( File.join(ENV['HOME'], "/.ssh/known_hosts") )
-  File.read(file).split("\n").map{|line|
+  ret = File.read(file).split("\n").map{|line|
     host_field = line.split.first
     host_field.split(",").first.split(":").first.gsub(/[\[\]]/,'')
   }.sort.uniq
+
+  # Grr, hashed hosts seem to be pretty much default nowadays on linux boxes.
+  if ret.first && ret.first =~ /^\|/
+    error "Error: #{file} contains hashed host addresses, so there's "+
+          "no way to figure out which hosts to replace keys on :("
+  end
+
+  ret
 end
 
 def list_servers
