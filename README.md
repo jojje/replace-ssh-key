@@ -26,7 +26,7 @@ Usage: replace-ssh-key.rb [options] [OLD_KEY [NEW_KEY]]
 Swaps an old SSH key for a new one on all known and connectable hosts/servers
 where the OLD_KEY allows login. The user used for login will be either the
 current user or whatever user mapping results from the user's machine or per-
-user SSH client configuration (e.g. `$HOME/.ssh/config`)
+user SSH client configuration (e.g. $HOME/.ssh/config)
 
 Arguments:
   OLD_KEY and NEW_KEY are both paths to the respective keys.
@@ -40,6 +40,9 @@ Options:
                                      unless connection was established within
                                      these many seconds.
     -R, --replace                    Perform the actual key replacement action.
+    -f, --hosts=~/.ssh/known_hosts   File that contains a space or line
+                                     delimited list of hostnames / IP addresses
+                                     to process.
     -v, --verbose                    Show verbose output
     -d, --dry-run                    Simulate the key replacement process
 ```
@@ -66,6 +69,13 @@ To help gauging what fraction of servers you've previosly visited are still up.
 This replaces the old key with the new on all servers that the old key can
 login to.
 
+### Replace a key using a custom list of hosts
+```
+./replace-ssh-key.rb ~/.ssh/id_rsa.old ~/.ssh/id_rsa -f my-hosts-file --replace
+```
+Same as the previous example, but will replace the keys for the hosts listed
+in `my-host-file`, instead of using `~/.ssh/known_hosts` as the source
+
 ## Assumptions
 The following assumptions have been made, and need to be true in order for the
 script to work as intended:
@@ -76,7 +86,9 @@ script to work as intended:
    file named `id_rsa.pub` in the same directory.
 3. Hashed hostnames are not being used (`HashKnownHosts no` in ssh config)
    Without it there is no way to automatically figure out what machines the
-   script need to swap the keys for.
+   script need to swap the keys for. If the user "suffers" from hashed
+   hostnames in the known_hosts file, then they have an out through the
+   --hosts option.
 
 The reason for the second assumption is that some users (me included) have a
 habit of adding comments to the public key, so we know what keys are installed,

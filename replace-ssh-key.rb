@@ -82,8 +82,8 @@ def assert_key(keyfile)
   assert_file(keyfile, "key")
 end
 
-def hosts
-  file = assert_file( File.join(ENV['HOME'], "/.ssh/known_hosts") )
+def hosts(opts)
+  file = assert_file( opts.hostsfile )
   ret = File.read(file).split("\n").map{|line|
     host_field = line.split.first
     host_field.split(",").first.split(":").first.gsub(/[\[\]]/,'')
@@ -98,16 +98,12 @@ def hosts
   ret
 end
 
-def list_servers
-  puts hosts.sort
-end
-
 def connect_to_each_server(opts)
   key = assert_key(opts.old_key)
   proxy = Proxy.new(opts)
 
   STDERR.print "Validity by host of key: #{key}\n\n"
-  hosts.each do |host|
+  hosts(opts).each do |host|
     valid = proxy.can_connect?(host, key)
     puts "#{valid}  #{host}"
   end
@@ -118,7 +114,7 @@ def replace_on_each_server(opts)
   [old_key, new_key].each{|key| assert_key("#{key}.pub") }
   proxy = Proxy.new(opts)
 
-  hosts.each do |host|
+  hosts(opts).each do |host|
     next unless proxy.can_connect?(host, old_key)
     proxy.replace_key(host, old_key, new_key)
   end
@@ -140,7 +136,10 @@ def wrap(str, maxwidth=42)
 end
 
 def parse_args
-  options = OpenStruct.new({:timeout => 5})
+  options = OpenStruct.new({
+    :timeout => 5,
+    :hostsfile => "~/.ssh/known_hosts"
+  })
   parser = OptionParser.new do |opts|
     opts.banner = <<-EOS.gsub(/^\s{6}/,'')
       Usage: #{File.basename $0} [options] [OLD_KEY [NEW_KEY]]
@@ -166,6 +165,9 @@ def parse_args
     end
     opts.on('-R', '--replace', *wrap('Perform the actual key replacement action.')) do |o|
       options.cmd = :replace
+    end
+    opts.on('-f', "--hosts=#{options.hostsfile}", *wrap('File that contains a space or line delimited list of hostnames / IP addresses to process.')) do |o|
+      options.hostsfile = o
     end
     opts.on('-v', '--verbose', *wrap('Show verbose output')) do |o|
       options.verbose = true
@@ -193,7 +195,7 @@ if __FILE__ == $0
   opts = parse_args
   case opts.cmd
   when :list
-    list_servers
+    puts hosts(opts).sort
   when :connect
     connect_to_each_server(opts)
   when :replace
