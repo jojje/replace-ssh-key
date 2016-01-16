@@ -2,7 +2,7 @@
 Simplifies the replacement of SSH keys on all servers the current machine has
 used those keys on.
 
-The history of where you've previosuly connected via SSH is obtained by naively
+The history of where you've previously connected via SSH is obtained by naively
 extracting the information from `$HOME/.ssh/known_hosts`
 
 The replacement procedure is as follows:
@@ -15,9 +15,9 @@ The replacement procedure is as follows:
 
 _Note_: Before running this for all machines, ensure that it works as expected
 by supplying the `--dry-run` flag. The script will then run in simulation mode,
-printing out every command instead of actually executing it. When you're
+printing out every command instead of actually executing them. When you're
 confident the behavior is as you expect, then you can run it for your entire
-fleed of machines.
+fleet of machines.
 
 ## Usage
 ```
@@ -50,14 +50,13 @@ Options:
 ## Examples
 
 ### List servers you've previously connected to
-The servers stored in ~/.ssh/known_hosts, which will be checked during
-replacement if they have your old key in there.
+The servers stored in ~/.ssh/known_hosts will be processed during replacement.
 ```
 ./replace-ssh-key.rb --list
 ```
 
 ### Check what servers are still alive
-To help gauging what fraction of servers you've previosly visited are still up.
+To help gauge what servers you've previously visited are still up.
 ```
 ./replace-ssh-key.rb ~/.ssh/id_rsa.old --connect
 ```
@@ -82,8 +81,8 @@ script to work as intended:
 
 1. The machine that runs the script has openssh installed.
 2. There is a public key in the same directory as the private key for both the
-   old and new keys. E.g if the private key is named `id_rsa`, then there is a
-   file named `id_rsa.pub` in the same directory.
+   old and new keys. E.g if the private key is named `id_rsa`, then it is
+   expected that there is a file named `id_rsa.pub` in the same directory.
 3. Hashed hostnames are not being used (`HashKnownHosts no` in ssh config)
    Without it there is no way to automatically figure out what machines the
    script need to swap the keys for. If the user "suffers" from hashed
