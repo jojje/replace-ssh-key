@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 require 'optparse'
 require 'ostruct'
-require 'net/ssh'
 require 'yaml'
 require 'digest/md5'
 
