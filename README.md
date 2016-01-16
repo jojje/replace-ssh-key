@@ -65,3 +65,27 @@ To help gauging what fraction of servers you've previosly visited are still up.
 ```
 This replaces the old key with the new on all servers that the old key can
 login to.
+
+## Assumptions
+The following assumptions have been made, and need to be true in order for the
+script to work as intended:
+
+1. The machine that runs the script has openssh installed.
+2. There is a public key in the same directory as the private key for both the
+   old and new keys. E.g if the private key is named `id_rsa`, then there is a
+   file named `id_rsa.pub` in the same directory.
+
+The reason for the second assumption is that some users (me included) have a
+habit of adding comments to the public key, so we know what keys are installed,
+at a glance, on various machines. When using ssh-keygen to "generate" an public
+key on the fly, no comments are provided as the "private key" doesn't contain
+any such information.
+
+The first assumption should be easy enough to satisfy. Most all linux systems
+use openssh, OSX has what looks like it and even windows has it readily
+available via Cygwin.
+
+For PuTTY user I'd recommend installing Cygwin's SSH and then export/transform
+the _old_ and _new_ keys you use in PuTTY to the OpenSSH format. After that
+you'll be able to use this script for replacing the keys, without having to
+abandon the use of Simon Tatham's awesome SSH client.
