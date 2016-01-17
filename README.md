@@ -75,6 +75,19 @@ login to.
 Same as the previous example, but will replace the keys for the hosts listed
 in `my-host-file`, instead of using `~/.ssh/known_hosts` as the source
 
+### Run the script in a Docker container
+```
+./run-in-docker.sh --list
+```
+The docker option may be suitable for those who don't like Ruby and
+consequently don't have it installed on their system. Everyone has docker
+though (or ought to :)
+
+The script mounts the docker host's current working directory as the working
+directory in the container. It also mounts the user's `~/.ssh` directory into the
+container user's ~/.ssh directory, so that everything matches up, as if the
+script had been launched from the host machine.
+
 ## Assumptions
 The following assumptions have been made, and need to be true in order for the
 script to work as intended:
